@@ -31,3 +31,6 @@ Owner-supplied 15.1-second Bakso Len promo, optimized for web to 477127 bytes. V
 
 ## R8 courier checkout
 Courier records are managed only in the private Kurir sheet. Two owner-supplied phone numbers were registered as Kurir 1 and Kurir 2; no public source code stores their numbers. Checkout opens the selected courier WA with complete buyer data, item quantities, prices, notes, total, and explicit callback request. Customer presses Send in WhatsApp. Store status remains controlled by Sheets; live API diagnostic required.
+
+## R9 brand and media
+Brand red/black/white based on supplied logo. Eight AI food category illustrations, labeled as such, are local JPEG fallbacks only; database photo takes priority. Courier names Ferry and Ardi updated in private Sheets, no phone numbers added to repo. Live API diagnostic confirmed AUTH_REQUIRED (Google login redirect), so checkout remains fail-closed.
