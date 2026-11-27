@@ -25,3 +25,6 @@ Food-delivery-inspired green/white visual system with real Bakso Len logo and st
 
 ## R6 interactive flyer
 Full image hero, six menus per page, category filters, labeled fallback illustrations (not product photos), one video slot, variant choices for Double/Balungan/bottled drinks, draft cart before live availability. Checkout remains gated by fresh API, store and approved active courier. No payment handling.
+
+## R7 video
+Owner-supplied 15.1-second Bakso Len promo, optimized for web to 477127 bytes. Video loads on tap only; the cover is a frame from the source video. Original archived in project Drive. Checkout gates unchanged.
