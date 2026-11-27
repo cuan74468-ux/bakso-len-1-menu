@@ -1,51 +1,9 @@
-# Bakso Len 1 — E-Katalog
-Kandidat awal. Bukan sistem POS, marketplace, atau penerima pembayaran. Menu publik → troli → WhatsApp kurir. Harga dan stok Google Sheets, API GAS read-only, frontend GitHub Pages.
+# Bakso Len 1
 
-## Status
-- 25 entri menu dari KB Batch 5 (26 Nov 2026); perlu rekonsiliasi dengan dua foto asli. Badge Best berdasarkan blueprint, belum disahkan. Minuman Botolan dikelompokkan seperti sumber. Semua seed tidak terverifikasi dan tidak dapat dipesan.
-- API_URL terisi deployment GAS v1 dari Owner; koneksi live diuji melalui CI. Pemesanan tetap mengikuti status toko dan kurir dari database. Tidak ada kurir contoh atau data pelanggan tersimpan.
-- Logo BL dan desain warna sementara, bukan replika foto menu asli.
-- Promo/game ditunda; tidak ada voucher palsu. PWA shell offline hanya untuk membaca katalog referensi. Browser Chromium 360px dengan data sintetis lulus pada 5bc334c; pemeriksaan browser live dan UAT perangkat nyata masih terpisah.
+Katalog menu digital Bakso Len 1 Talang Rejo.
 
-## Handoff Rakai
-1. Buat spreadsheet privat `DB_Bakso_Len_1`, impor `data/menu.csv`, `data/kurir.csv`, `data/pengaturan.csv` ke tab `Menu`, `Kurir`, `Pengaturan`. Format harga/urutan sebagai angka tanpa pemisah, kolom WA dan jam sebagai teks biasa. Cek data dengan foto asli; ganti status HABIS menjadi READY hanya untuk item benar-benar tersedia. Jangan isi nomor kurir tanpa persetujuan publikasi. 
-2. Buat Apps Script, salin `apps-script/Code.gs` dan manifest `appsscript.json`; set Script Property `DB_ID`. Deploy web app berjalan sebagai pemilik, akses Anyone hanya setelah pemeriksaan data yang diproyeksikan. Jangan buka akses spreadsheet. Endpoint JSON tanpa mutasi. Tidak ada doPost.
-3. Berikan URL deployment `/exec` ke Sanusi untuk `js/config.js`, cek respons dari browser Pages (termasuk redirect/CORS). Jangan ubah status toko BUKA sebelum UAT dan izin.
-4. Aktifkan Pages dari main setelah review, uji HP 360px, status toko tutup, perubahan harga/stok, kurir tidak aktif, offline dan pemesanan valid. Gunakan nomor kurir uji yang disetujui, jangan mengirim pesanan nyata tanpa izin.
-5. Foto asli dan logo disimpan privat dulu, lalu aset publik yang telah disetujui ditempatkan pada assets/; API hanya memberi URL publik HTTPS. 
+[Lihat Menu](https://cuan74468-ux.github.io/bakso-len-1-menu/)
 
-## API v1
-`{ok:true,schema:1,generated_at:ISO,store:{open:boolean,jam_buka:"09:00",jam_tutup:"19:30",timezone:"Asia/Jakarta"},menu:[{id_menu,kategori,nama_menu,deskripsi,harga_porsi:number|null,harga_satuan:number|null,badge,status,foto_url,urutan}],kurir:[{id_kurir,nama_kurir,whatsapp,area_layanan,urutan}]}`. Error `{ok:false,error:"CATALOG_UNAVAILABLE"}`. GET tanpa credentials. Waktu tutup eksklusif. Status toko dan harga dicek kembali sebelum deep link WA; karena tidak ada order server, pesanan baru sah setelah kurir mengonfirmasi. Tidak mengklaim WA dikirim otomatis; pengguna tekan Kirim. 
+---
 
-## Test
-`npm test` (Node 22, tanpa dependency). `python -m http.server 8000` untuk inspeksi lokal. Deploy Pages hanya setelah audit dan persetujuan pemilik.
-
-## Flyer preview r5
-Food-delivery-inspired green/white visual system with real Bakso Len logo and storefront asset from the project folder. Featured selections and prices derive from menu data. Individual photos render only when `foto_url` is supplied. Promo video requires a verified direct public video URL in flyer-r5/media.js; hidden by default. Preview worker retired; offline install is not enabled pending stable release. Live API returning HTML remains a separate failing integration check.
-
-## R6 interactive flyer
-Full image hero, six menus per page, category filters, labeled fallback illustrations (not product photos), one video slot, variant choices for Double/Balungan/bottled drinks, draft cart before live availability. Checkout remains gated by fresh API, store and approved active courier. No payment handling.
-
-## R7 video
-Owner-supplied 15.1-second Bakso Len promo, optimized for web to 477127 bytes. Video loads on tap only; the cover is a frame from the source video. Original archived in project Drive. Checkout gates unchanged.
-
-## R8 courier checkout
-Courier records are managed only in the private Kurir sheet. Two owner-supplied phone numbers were registered as Kurir 1 and Kurir 2; no public source code stores their numbers. Checkout opens the selected courier WA with complete buyer data, item quantities, prices, notes, total, and explicit callback request. Customer presses Send in WhatsApp. Store status remains controlled by Sheets; live API diagnostic required.
-
-## R9 brand and media
-Brand red/black/white based on supplied logo. Eight AI food category illustrations, labeled as such, are local JPEG fallbacks only; database photo takes priority. Courier names Ferry and Ardi updated in private Sheets, no phone numbers added to repo. Live API diagnostic confirmed AUTH_REQUIRED (Google login redirect), so checkout remains fail-closed.
-
-## R10 owner UAT
-Explicit URL fragment mode=uat plus two distinct kurir=Name:phone values enables local fixture checkout only. No owner phone numbers in source, no local persistence, no production API writes or status change. WhatsApp content is explicitly marked test; customer must manually send. Normal URL remains fail-closed when GAS unavailable. WebM video added as primary supported codec with MP4 fallback. Production API remains AUTH_REQUIRED pending deployment setting correction.
-
-## R11 temporary customer availability
-Owner requested ordinary customer checkout while GAS requires Google login. `data/public-catalog.json` is an explicit public snapshot from Sheets (25 menu, two owner-approved public courier contacts, store enabled). It expires 4 Dec 2026 19:30 WIB, respects opening hours, and requests manual price/stock/fee confirmation. It contains no customer data. Public Git history retains these approved contact numbers. Sheet changes require republishing snapshot until GAS works; a successful live response always wins and a later connection failure in that session fails closed. Rollback: revert R11 or set snapshot store.enabled=false and republish. Do not use fallback to claim live inventory.
-
-## R12 responsive design cleanup
-Rebuilt stylesheet into one coherent responsive system. Explicit grid constraints for menu, courier and cart; long text wraps, courier button no longer inherits 44px quantity-button width, native inputs stay within parent, small-screen cart controls move to separate row. Tests inspect actual text bounds at 320/360/desktop, including long notes, dialog and checkout. No changes to order validation or public snapshot expiry.
-
-## R13 footer and static QRIS
-Added official social profile links and Linggau AI Studio credit. Original owner-supplied QRIS photograph is byte-preserved; checksum and merchant name decoded locally. Manual payment choice in checkout, confirmation of amount before paying, proof sent to courier; merchant verifies funds, no automatic paid status. QRIS disabled in UAT. No change to GAS or snapshot expiry.
-
-## R14
-Compact brand footer with accessible Instagram/TikTok SVG icons and direct QRIS dialog below promo video. Original payment photo and checkout validation unchanged; QRIS remains hidden in UAT. No database or main-branch changes.
+Dikembangkan oleh **Linggau AI Studio**.
