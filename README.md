@@ -3,9 +3,9 @@ Kandidat awal. Bukan sistem POS, marketplace, atau penerima pembayaran. Menu pub
 
 ## Status
 - 25 entri menu dari KB Batch 5 (26 Nov 2026); perlu rekonsiliasi dengan dua foto asli. Badge Best berdasarkan blueprint, belum disahkan. Minuman Botolan dikelompokkan seperti sumber. Semua seed tidak terverifikasi dan tidak dapat dipesan.
-- API_URL kosong, checkout nonaktif. Tidak ada kurir contoh atau data pelanggan tersimpan.
+- API_URL terisi deployment GAS v1 dari Owner; koneksi live diuji melalui CI. Pemesanan tetap mengikuti status toko dan kurir dari database. Tidak ada kurir contoh atau data pelanggan tersimpan.
 - Logo BL dan desain warna sementara, bukan replika foto menu asli.
-- Promo/game ditunda; tidak ada voucher palsu. PWA shell offline hanya untuk membaca katalog referensi. Belum ada pengujian browser/perangkat nyata atau GAS live.
+- Promo/game ditunda; tidak ada voucher palsu. PWA shell offline hanya untuk membaca katalog referensi. Browser Chromium 360px dengan data sintetis lulus pada 5bc334c; pemeriksaan browser live dan UAT perangkat nyata masih terpisah.
 
 ## Handoff Rakai
 1. Buat spreadsheet privat `DB_Bakso_Len_1`, impor `data/menu.csv`, `data/kurir.csv`, `data/pengaturan.csv` ke tab `Menu`, `Kurir`, `Pengaturan`. Format harga/urutan sebagai angka tanpa pemisah, kolom WA dan jam sebagai teks biasa. Cek data dengan foto asli; ganti status HABIS menjadi READY hanya untuk item benar-benar tersedia. Jangan isi nomor kurir tanpa persetujuan publikasi. 

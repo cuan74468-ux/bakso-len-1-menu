@@ -14,6 +14,7 @@ const width=async p=>assert.ok(await p.evaluate(()=>document.documentElement.scr
 try{
  const ctx=await browser.newContext({viewport:{width:360,height:740},isMobile:true,deviceScaleFactor:1,serviceWorkers:'block'});
  const p=await ctx.newPage(), errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.route('**/js/config.js',route=>route.fulfill({contentType:'text/javascript',body:"export const API_URL = '';"}));
  await p.goto(url);await p.waitForSelector('.menu-card');assert.equal(await p.locator('.menu-card').count(),25);assert.equal(await p.locator('.menu-card:enabled').count(),0);await width(p);
  await p.locator('#search').fill('Bakso Urat');assert.equal(await p.locator('.menu-card').count(),1);await p.locator('#search').clear();
  await p.getByRole('button',{name:'Minuman',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),5);await width(p);
@@ -21,6 +22,7 @@ try{
  const fake='https://script.google.com/macros/s/TEST_ONLY/exec';
  let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',urutan:1}]};
  catalog.menu[0].status='HABIS';
+ await p.unroute('**/js/config.js');
  await p.route('**/js/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
  await p.route('https://script.google.com/**',route=>route.fulfill({json:{...catalog,generated_at:new Date().toISOString()},headers:{'access-control-allow-origin':'*'}}));
  let wa=null;await p.route('https://wa.me/**',route=>{wa=route.request().url();return route.fulfill({contentType:'text/plain',body:'Intercepted test; no WhatsApp message sent'});});

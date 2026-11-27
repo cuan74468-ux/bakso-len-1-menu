@@ -23,3 +23,4 @@ jobs:
       - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
       - run: npx playwright install --with-deps chromium
       - run: node tests/browser-smoke.mjs
+      - run: node tests/live-smoke.mjs
