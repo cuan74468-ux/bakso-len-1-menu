@@ -34,3 +34,6 @@ Courier records are managed only in the private Kurir sheet. Two owner-supplied 
 
 ## R9 brand and media
 Brand red/black/white based on supplied logo. Eight AI food category illustrations, labeled as such, are local JPEG fallbacks only; database photo takes priority. Courier names Ferry and Ardi updated in private Sheets, no phone numbers added to repo. Live API diagnostic confirmed AUTH_REQUIRED (Google login redirect), so checkout remains fail-closed.
+
+## R10 owner UAT
+Explicit URL fragment mode=uat plus two distinct kurir=Name:phone values enables local fixture checkout only. No owner phone numbers in source, no local persistence, no production API writes or status change. WhatsApp content is explicitly marked test; customer must manually send. Normal URL remains fail-closed when GAS unavailable. WebM video added as primary supported codec with MP4 fallback. Production API remains AUTH_REQUIRED pending deployment setting correction.
