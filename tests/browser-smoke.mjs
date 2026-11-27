@@ -25,7 +25,7 @@ const contained=async(p,label)=>{
    const left=b.left+parseFloat(s.borderLeftWidth||0),right=b.right-parseFloat(s.borderRightWidth||0);
    if(box.scrollWidth>box.clientWidth+2)bad.push(box.className+' horizontal '+box.scrollWidth+'/'+box.clientWidth);
    const walk=document.createTreeWalker(box,NodeFilter.SHOW_TEXT);
-   while(walk.nextNode()){const n=walk.currentNode;if(!n.textContent.trim()||!n.parentElement?.getClientRects().length||n.parentElement.closest('select,input,textarea,[hidden]'))continue;
+   while(walk.nextNode()){const n=walk.currentNode;if(!n.textContent.trim()||!n.parentElement?.getClientRects().length||n.parentElement.closest('select,input,textarea,[hidden]')||n.parentElement.closest('details:not([open]) > :not(summary)'))continue;
     const r=document.createRange();r.selectNodeContents(n);
     for(const x of r.getClientRects())if(x.width>0&&(x.left<left-2||x.right>right+2||x.top<b.top-2||x.bottom>b.bottom+2)){bad.push((box.className||box.id)+': '+n.textContent.slice(0,48));break;}
    }

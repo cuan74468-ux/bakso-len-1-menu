@@ -159,3 +159,6 @@ dialog::backdrop{background:#0008}
  .description{font-size:13px}
  #cart-page,#courier-page{max-width:760px;margin-inline:auto}
 }
+
+/* Explicitly remove collapsed preview content from layout and text bounds. */
+details:not([open]) > :not(summary){display:none}
