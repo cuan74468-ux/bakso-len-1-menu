@@ -320,17 +320,17 @@
       "whatsapp": "6283160697880",
       "area_layanan": "",
       "urutan": 1,
-      "foto_url": "",
-      "bio": ""
+      "foto_url": "assets/couriers/ferry.jpg",
+      "bio": "Kurir mitra Bakso Len 1. Hubungi langsung untuk konfirmasi pesanan, tujuan pengantaran, dan ongkos kirim."
     },
     {
       "id_kurir": "KUR-02",
-      "nama_kurir": "Ardi",
+      "nama_kurir": "Ardy",
       "whatsapp": "6289691554080",
       "area_layanan": "",
       "urutan": 2,
-      "foto_url": "",
-      "bio": ""
+      "foto_url": "assets/couriers/ardy.jpg",
+      "bio": "Kurir mitra Bakso Len 1. Hubungi melalui WhatsApp untuk menyepakati pengantaran dan ketersediaan layanan."
     }
   ]
 }
