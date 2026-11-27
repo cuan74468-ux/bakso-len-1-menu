@@ -12,3 +12,14 @@ jobs:
           node-version: 22
       - run: npm test
       - run: node --check js/app.js && node --check sw.js
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/browser-smoke.mjs
