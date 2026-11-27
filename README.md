@@ -22,3 +22,6 @@ Kandidat awal. Bukan sistem POS, marketplace, atau penerima pembayaran. Menu pub
 
 ## Flyer preview r5
 Food-delivery-inspired green/white visual system with real Bakso Len logo and storefront asset from the project folder. Featured selections and prices derive from menu data. Individual photos render only when `foto_url` is supplied. Promo video requires a verified direct public video URL in flyer-r5/media.js; hidden by default. Preview worker retired; offline install is not enabled pending stable release. Live API returning HTML remains a separate failing integration check.
+
+## R6 interactive flyer
+Full image hero, six menus per page, category filters, labeled fallback illustrations (not product photos), one video slot, variant choices for Double/Balungan/bottled drinks, draft cart before live availability. Checkout remains gated by fresh API, store and approved active courier. No payment handling.

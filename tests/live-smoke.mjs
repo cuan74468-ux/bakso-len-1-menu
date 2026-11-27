@@ -32,7 +32,7 @@ try{
  assert.ok(await p.locator('.menu-card').count()>0);
  assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');
  const label=await p.locator('#store').textContent();
- if(label.startsWith('TUTUP')||label.includes('Kurir belum tersedia'))assert.equal(await p.locator('.menu-card:enabled').count(),0,'Closed store or no courier should block checkout');
+ if(label.startsWith('TUTUP')||label.includes('Kurir belum tersedia'))assert.ok(await p.locator('#buyer button[type=submit]').isDisabled(),'Closed store or no courier should block checkout');
  assert.deepEqual(errors,[]);
  console.log('LIVE_BROWSER_OK: real GAS response, CORS, rendering at 360px, no WhatsApp send');
  await ctx.close();
