@@ -46,3 +46,6 @@ Rebuilt stylesheet into one coherent responsive system. Explicit grid constraint
 
 ## R13 footer and static QRIS
 Added official social profile links and Linggau AI Studio credit. Original owner-supplied QRIS photograph is byte-preserved; checksum and merchant name decoded locally. Manual payment choice in checkout, confirmation of amount before paying, proof sent to courier; merchant verifies funds, no automatic paid status. QRIS disabled in UAT. No change to GAS or snapshot expiry.
+
+## R14
+Compact brand footer with accessible Instagram/TikTok SVG icons and direct QRIS dialog below promo video. Original payment photo and checkout validation unchanged; QRIS remains hidden in UAT. No database or main-branch changes.
