@@ -1,2 +1,9 @@
-# bakso-len-1-menu
-E-Katalog interaktif Bakso Len 1 dengan Google Sheets, Apps Script dan WhatsApp Kurir.
+# Bakso Len 1
+
+Katalog menu digital Bakso Len 1 Talang Rejo.
+
+[Lihat Menu](https://cuan74468-ux.github.io/bakso-len-1-menu/)
+
+---
+
+Dikembangkan oleh **Linggau AI Studio**.
