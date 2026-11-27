@@ -43,3 +43,6 @@ Owner requested ordinary customer checkout while GAS requires Google login. `dat
 
 ## R12 responsive design cleanup
 Rebuilt stylesheet into one coherent responsive system. Explicit grid constraints for menu, courier and cart; long text wraps, courier button no longer inherits 44px quantity-button width, native inputs stay within parent, small-screen cart controls move to separate row. Tests inspect actual text bounds at 320/360/desktop, including long notes, dialog and checkout. No changes to order validation or public snapshot expiry.
+
+## R13 footer and static QRIS
+Added official social profile links and Linggau AI Studio credit. Original owner-supplied QRIS photograph is byte-preserved; checksum and merchant name decoded locally. Manual payment choice in checkout, confirmation of amount before paying, proof sent to courier; merchant verifies funds, no automatic paid status. QRIS disabled in UAT. No change to GAS or snapshot expiry.

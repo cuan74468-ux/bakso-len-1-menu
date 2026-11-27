@@ -11,7 +11,7 @@ jobs:
         with:
           node-version: 22
       - run: npm test
-      - run: node --check flyer-r12/app.js && node --check sw.js
+      - run: node --check flyer-r13/app.js && node --check sw.js
   browser:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
