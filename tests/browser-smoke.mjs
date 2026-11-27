@@ -19,7 +19,7 @@ const navSize=async p=>{const d=await p.locator('.bottom').evaluate(n=>({height:
 const contained=async(p,label)=>{
  const problems=await p.evaluate(()=>{
   const bad=[];
-  const scopes=[...document.querySelectorAll('.menu-card,.feature-copy,.cart-line,.courier-line,.summary,.modal-head,#checkout,.video-cover,.hero-copy,.store,#preview,.bottom button,.pagination,.footer-top,.studio-credit,.qris-shortcut,#qris-dialog')].filter(el=>el.getClientRects().length);
+  const scopes=[...document.querySelectorAll('.menu-card,.feature-copy,.cart-line,.courier-card,.courier-actions,.summary,.modal-head,#checkout,.video-cover,.hero-copy,.store,#preview,.bottom button,.pagination,.footer-top,.studio-credit,.qris-shortcut,#qris-dialog')].filter(el=>el.getClientRects().length);
   for(const box of scopes){
    const b=box.getBoundingClientRect(),s=getComputedStyle(box);
    const left=b.left+parseFloat(s.borderLeftWidth||0),right=b.right-parseFloat(s.borderRightWidth||0);
@@ -49,7 +49,7 @@ try{
  await p.setViewportSize({width:360,height:740});
  await p.getByRole('button',{name:'Berikutnya',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),6);await p.getByRole('button',{name:'Sebelumnya',exact:true}).click();await p.locator('.menu-card').filter({hasText:'Bakso Isi Daging Cincang'}).click();await p.locator('#note').fill('CatatanPanjangTanpaSpasi'.repeat(7));await contained(p,'item dialog');await p.getByRole('button',{name:'Tambah ke troli'}).click();await p.locator('[data-page=cart]').click();await check(p,'#count','1');await p.setViewportSize({width:320,height:568});await contained(p,'320 cart with long note');await p.setViewportSize({width:360,height:740});assert.ok(await p.locator('#buyer button[type=submit]').isDisabled());console.log('PASS pagination and draft cart without live API');await p.locator('[data-page=menu]').click();console.log('PASS 360px seed, search, filters, checkout locked');
  const fake='https://script.google.com/macros/s/TEST_ONLY/exec';
- let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',urutan:1},{id_kurir:'KTEST2',nama_kurir:'Kurir Uji 2',whatsapp:'6281234567891',area_layanan:'',urutan:2}]};
+ let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',bio:'Profil uji dengan biodata singkat.',foto_url:'assets/couriers/missing.jpg',urutan:1},{id_kurir:'KTEST2',nama_kurir:'Kurir Uji 2',whatsapp:'6281234567891',area_layanan:'',urutan:2}]};
  catalog.menu[0].status='HABIS';
  await p.unroute('**/js/config.js');
  await p.route('**/js/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
@@ -76,7 +76,7 @@ try{
  await p.clock.setFixedTime(new Date('2026-11-27T14:00:00+07:00'));
  await p.goto(url+'/?v=11');
  await check(p,'#store','Konfirmasi ke kurir');
- await p.locator('[data-page=courier]').click();await check(p,'#couriers','Kurir Uji 2');await p.setViewportSize({width:320,height:568});await contained(p,'320 courier');await p.setViewportSize({width:360,height:740});
+ await p.locator('[data-page=courier]').click();await check(p,'#couriers','Kurir Uji 2');assert.equal(await p.locator('.courier-card').count(),2);assert.match(await p.locator('.courier-bio').first().textContent(),/Profil uji/);assert.equal(new URL(await p.getByRole('link',{name:'Hubungi Kurir Uji 2 via WhatsApp'}).getAttribute('href')).pathname,'/6281234567891');assert.equal(await p.locator('.courier-whatsapp svg').count(),2);assert.equal(await p.locator('.courier-avatar').last().textContent(),'KU');await p.setViewportSize({width:320,height:568});await contained(p,'320 courier');await p.setViewportSize({width:360,height:740});
  await p.getByRole('button',{name:'Pilih Kurir Uji 2',exact:true}).click();
  await add();await p.locator('[data-page=cart]').click();
  assert.equal(await p.locator('[name=courier]').inputValue(),'KTEST2');
@@ -88,7 +88,7 @@ try{
  await p.goto(url+'/?v=10#mode=uat&kurir=Penguji%20A%3A081234567890&kurir=Penguji%20B%3A081234567891');
  await check(p,'#store','MODE UJI COBA');
  assert.equal(await p.locator('#uat-note').isVisible(),true);
- await p.locator('[data-page=courier]').click();await check(p,'#couriers','Penguji B');
+ await p.locator('[data-page=courier]').click();await check(p,'#couriers','Penguji B');assert.equal(await p.locator('.courier-whatsapp').count(),0);
  await p.locator('[data-page=menu]').click();await add();await p.locator('[data-page=cart]').click();
  for(const [name,value] of Object.entries({name:'Pelanggan Uji',phone:'081234567890',address:'Alamat Uji',landmark:'Patokan Uji'}))await p.locator('[name='+name+']').fill(value);
  await p.locator('[name=courier]').selectOption('UAT-2');await submit();await p.waitForURL('https://wa.me/**');

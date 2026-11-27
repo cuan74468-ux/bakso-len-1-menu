@@ -319,14 +319,18 @@
       "nama_kurir": "Ferry",
       "whatsapp": "6283160697880",
       "area_layanan": "",
-      "urutan": 1
+      "urutan": 1,
+      "foto_url": "",
+      "bio": ""
     },
     {
       "id_kurir": "KUR-02",
       "nama_kurir": "Ardi",
       "whatsapp": "6289691554080",
       "area_layanan": "",
-      "urutan": 2
+      "urutan": 2,
+      "foto_url": "",
+      "bio": ""
     }
   ]
 }

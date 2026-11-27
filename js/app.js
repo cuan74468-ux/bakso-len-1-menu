@@ -1,4 +1,4 @@
-import {API_URL} from './config.js';import {snapshotCatalog,markSnapshotMessage} from './snapshot.js';import {PROMO_VIDEO_URL,PROMO_VIDEO_WEBM_URL} from './media.js';import {readTestContacts,makeTestCatalog,markTestMessage} from './test-mode.js';import {seedMenu} from './seed.js';import {categories,rupiah,clean,phone,price,parseCatalog,reviewCart,message,whatsappUrl} from './core.js';
+import {API_URL} from './config.js';import {profileInitial,courierPhotoUrl,courierChatUrl} from './courier.js';import {snapshotCatalog,markSnapshotMessage} from './snapshot.js';import {PROMO_VIDEO_URL,PROMO_VIDEO_WEBM_URL} from './media.js';import {readTestContacts,makeTestCatalog,markTestMessage} from './test-mode.js';import {seedMenu} from './seed.js';import {categories,rupiah,clean,phone,price,parseCatalog,reviewCart,message,whatsappUrl} from './core.js';
 const $=id=>document.getElementById(id);const node=(tag,t='',cls='')=>{const e=document.createElement(tag);e.textContent=t;if(cls)e.className=cls;return e};
 let menu=seedMenu,live=null,cart=[],category='Bakso',chosen=null,checking=false,requestSeq=0,menuPage=1;const PAGE_SIZE=6;let seenLive=false;const buyer=$('buyer');const testContacts=readTestContacts(location.hash);const testMode=Boolean(testContacts);const formatOrder=(cart,data,total,courier)=>{const msg=message(cart,data,total,courier);return testMode?markTestMessage(msg):live?.source==='sheet_snapshot'?markSnapshotMessage(msg):msg;};
 let noticeTimer;function notify(t){$('notice').textContent=t;clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>{$('notice').textContent='';},6500);}
@@ -59,7 +59,37 @@ $('continue-menu').onclick=()=>page('menu');
 function total(){return cart.reduce((a,l)=>a+l.price*l.qty,0)}function formData(){return Object.fromEntries(new FormData(buyer))}
 function renderCart(){const count=cart.reduce((a,l)=>a+l.qty,0);$('count').textContent=count;$('total').textContent=rupiah(total());$('cart').replaceChildren();if(!cart.length)$('cart').append(node('p','Troli masih kosong.','muted'));for(const [i,l] of cart.entries()){const row=node('div','','line cart-line'),left=node('div','','cart-info');left.append(node('strong',l.name),node('p',l.variant+' · '+rupiah(l.price)+(l.note?' · '+l.note:'')));const right=node('div','','quantity-control');for(const [t,d] of [['−',-1],['+',1]]){const b=node('button',t);b.type='button';b.setAttribute('aria-label',(d>0?'Tambah':'Kurangi')+' '+l.name);b.disabled=checking||(d>0&&l.qty>=99);b.onclick=()=>{l.qty+=d;if(l.qty===0)cart.splice(i,1);renderCart()};right.append(b);if(d<0)right.append(node('span',String(l.qty),'quantity-value'));}row.append(left,right);$('cart').append(row);}if(cart.length){const s=node('div','','summary');s.append(node('span','Estimasi belanja'),node('span',rupiah(total())));$('cart').append(s);}$('checkout').hidden=!cart.length;$('checkout-status').textContent=canOrder()?(testMode?'MODE UJI COBA — isi data contoh dan pilih nomor uji.':(live?.source==='sheet_snapshot'?'Pilih kurir. Harga, stok dan ongkir dikonfirmasi langsung.':'Pilih kurir dan isi alamat pengantaran.')):'Troli tersimpan sementara di halaman ini. Checkout belum tersedia karena toko atau kurir belum siap.';buyer.querySelector('button[type=submit]').disabled=!canOrder()||checking;$('copy').disabled=checking||!canOrder();updatePreview();}
 function updatePreview(){const data=formData();$('qris-panel').hidden=testMode||data.payment!=='qris';$('preview').textContent=cart.length?formatOrder(cart,data,total(),live?.kurir.find(c=>c.id_kurir===data.courier)):'';}
-function renderCouriers(){const select=buyer.elements.courier,prior=select.value;select.replaceChildren();const blank=node('option','Pilih kurir');blank.value='';select.append(blank);$('couriers').replaceChildren();for(const c of live?.kurir??[]){const opt=node('option',c.nama_kurir+(c.area_layanan?' — '+c.area_layanan:''));opt.value=c.id_kurir;select.append(opt);const el=node('div','','line courier-line');const info=node('div','','courier-info');info.append(node('strong',c.nama_kurir),node('p',c.area_layanan||'Kurir mitra'));const choose=node('button','Pilih');choose.type='button';choose.className='courier-select';choose.setAttribute('aria-label','Pilih '+c.nama_kurir);choose.onclick=()=>{select.value=c.id_kurir;updatePreview();page(cart.length?'cart':'menu');notify(cart.length?'Kurir dipilih: '+c.nama_kurir:'Kurir dipilih. Silakan tambah menu.');};el.append(info,choose);$('couriers').append(el);}if([...select.options].some(o=>o.value===prior))select.value=prior;if(!live?.kurir?.length)$('couriers').append(node('p',live?'Belum ada kurir aktif.':'Daftar kurir sedang tidak tersedia. Muat ulang halaman.','muted'));}
+function renderCouriers(){
+ const select=buyer.elements.courier,prior=select.value;select.replaceChildren();
+ const blank=node('option','Pilih kurir');blank.value='';select.append(blank);
+ const root=$('couriers');root.replaceChildren();
+ for(const c of live?.kurir??[]){
+  const name=clean(c.nama_kurir,80),area=clean(c.area_layanan,160),bio=clean(c.bio,500);
+  const opt=node('option',name+(area?' — '+area:''));opt.value=c.id_kurir;select.append(opt);
+  const el=node('article','','courier-card');
+  const top=node('div','','courier-profile');
+  const avatar=node('div','','courier-avatar');const initial=node('span',profileInitial(name));avatar.append(initial);
+  const photo=courierPhotoUrl(c.foto_url,location.href);
+  if(photo){const im=document.createElement('img');im.alt='Foto '+name;im.loading='lazy';im.referrerPolicy='no-referrer';im.onload=()=>{initial.hidden=true;};im.onerror=()=>im.remove();im.src=photo;avatar.append(im);}
+  const info=node('div','','courier-info');info.append(node('strong',name),node('span','Kurir mitra Bakso Len','courier-role'));
+  if(area)info.append(node('p',area,'courier-area'));
+  top.append(avatar,info);el.append(top);
+  el.append(node('p',bio||'Konfirmasikan area layanan, ketersediaan dan ongkos kirim langsung dengan kurir.','courier-bio'));
+  const actions=node('div','','courier-actions');
+  const choose=node('button','Pilih kurir','courier-select');choose.type='button';choose.setAttribute('aria-label','Pilih '+name);
+  choose.onclick=()=>{select.value=c.id_kurir;updatePreview();page(cart.length?'cart':'menu');notify(cart.length?'Kurir dipilih: '+name:'Kurir dipilih. Silakan tambah menu.');};
+  actions.append(choose);
+  if(!testMode){
+   const chat=node('a','','courier-whatsapp');chat.href=courierChatUrl(c);chat.target='_blank';chat.rel='noopener noreferrer';chat.setAttribute('aria-label','Hubungi '+name+' via WhatsApp');chat.title='Hubungi '+name;
+   const icon=document.createElementNS('http://www.w3.org/2000/svg','svg');icon.setAttribute('viewBox','0 0 24 24');icon.setAttribute('aria-hidden','true');icon.setAttribute('fill','currentColor');
+   const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('d','M12 2a10 10 0 0 0-8.65 15L2 22l5.1-1.34A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.17-1.14l-.3-.18-3.03.8.81-2.95-.2-.31A8.2 8.2 0 1 1 12 20.2Zm4.5-6.12c-.25-.13-1.46-.72-1.69-.8-.23-.08-.4-.12-.57.13-.16.25-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-2-1.24-.74-.66-1.24-1.48-1.38-1.73-.15-.25-.02-.38.1-.51.11-.11.25-.29.38-.43.12-.15.16-.25.25-.42.08-.16.04-.31-.02-.43-.06-.13-.57-1.37-.78-1.87-.2-.49-.4-.42-.56-.43l-.48-.01c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.23.9 2.42 1.02 2.59.12.16 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.46-.6 1.66-1.17.21-.58.21-1.07.15-1.17-.06-.1-.23-.16-.48-.29Z');
+   icon.append(path);chat.append(icon,node('span','WhatsApp'));actions.append(chat);
+  }
+  el.append(actions);root.append(el);
+ }
+ if([...select.options].some(o=>o.value===prior))select.value=prior;
+ if(!live?.kurir?.length)root.append(node('p',live?'Belum ada kurir aktif.':'Daftar kurir sedang tidak tersedia. Muat ulang halaman.','muted'));
+}
 function applyCatalog(v){live=v;menu=v?.menu??seedMenu;$('store').textContent=testMode?'MODE UJI COBA · Bukan pesanan sungguhan':v?(v.store.open?'BUKA':'TUTUP')+' · '+v.store.jam_buka+'–'+v.store.jam_tutup+' WIB'+(v.source==='sheet_snapshot'?' · Konfirmasi ke kurir':v.store.open&&!v.kurir.length?' · Kurir belum tersedia':''):'Daftar menu referensi · pemesanan belum tersedia';renderMenu();renderFeatured();renderCouriers();renderCart();}
 async function refresh(){
  const seq=++requestSeq;
