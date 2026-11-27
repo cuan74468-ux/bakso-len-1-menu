@@ -37,3 +37,6 @@ Brand red/black/white based on supplied logo. Eight AI food category illustratio
 
 ## R10 owner UAT
 Explicit URL fragment mode=uat plus two distinct kurir=Name:phone values enables local fixture checkout only. No owner phone numbers in source, no local persistence, no production API writes or status change. WhatsApp content is explicitly marked test; customer must manually send. Normal URL remains fail-closed when GAS unavailable. WebM video added as primary supported codec with MP4 fallback. Production API remains AUTH_REQUIRED pending deployment setting correction.
+
+## R11 temporary customer availability
+Owner requested ordinary customer checkout while GAS requires Google login. `data/public-catalog.json` is an explicit public snapshot from Sheets (25 menu, two owner-approved public courier contacts, store enabled). It expires 4 Dec 2026 19:30 WIB, respects opening hours, and requests manual price/stock/fee confirmation. It contains no customer data. Public Git history retains these approved contact numbers. Sheet changes require republishing snapshot until GAS works; a successful live response always wins and a later connection failure in that session fails closed. Rollback: revert R11 or set snapshot store.enabled=false and republish. Do not use fallback to claim live inventory.
