@@ -11,6 +11,7 @@ const url='http://127.0.0.1:'+server.address().port;
 const browser=await chromium.launch({headless:true});
 const check=async(p,selector,expected)=>{await p.waitForFunction(({selector,expected})=>document.querySelector(selector)?.textContent.includes(expected),{selector,expected});};
 const width=async p=>assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');
+const navSize=async p=>{const d=await p.locator('.bottom').evaluate(n=>({height:n.getBoundingClientRect().height,buttons:[...n.querySelectorAll('button')].map(b=>b.getBoundingClientRect().height),viewport:innerHeight}));assert.ok(d.height<=64&&d.height/d.viewport<.13,'Oversized navigation '+JSON.stringify(d));assert.ok(d.buttons.every(h=>h>=44&&h<=48),'Invalid tap targets');console.log('PASS compact navigation '+JSON.stringify(d));};
 try{
  const ctx=await browser.newContext({viewport:{width:360,height:740},isMobile:true,deviceScaleFactor:1,serviceWorkers:'block'});
  const p=await ctx.newPage(), errors=[];p.on('pageerror',e=>errors.push(e.message));
@@ -18,6 +19,10 @@ try{
  await p.goto(url);await p.waitForSelector('.menu-card');assert.equal(await p.locator('.menu-card').count(),25);assert.equal(await p.locator('.menu-card:enabled').count(),0);await width(p);
  await p.locator('#search').fill('Bakso Urat');assert.equal(await p.locator('.menu-card').count(),1);await p.locator('#search').clear();
  await p.getByRole('button',{name:'Minuman',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),5);await width(p);
+ await navSize(p);
+ await p.setViewportSize({width:320,height:568});await width(p);await navSize(p);
+ await p.setViewportSize({width:1280,height:800});await width(p);await navSize(p);
+ await p.setViewportSize({width:360,height:740});
  console.log('PASS 360px seed, search, filters, checkout locked');
  const fake='https://script.google.com/macros/s/TEST_ONLY/exec';
  let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',urutan:1}]};
@@ -29,7 +34,7 @@ try{
  await p.reload();await check(p,'#store','BUKA');
  assert.equal(await p.locator('.menu-card:enabled').count(),24);
  const add=async()=>{await p.locator('.menu-card').filter({hasText:'Bakso Isi Daging Cincang'}).click();await p.locator('#variant').selectOption('satuan');await p.locator('#qty').fill('2');await p.locator('#note').fill('tanpa mie');await p.getByRole('button',{name:'Tambah ke troli'}).click();};
- await add();await p.locator('[data-page=cart]').click();await check(p,'#count','2');await width(p);
+ await add();await p.locator('[data-page=cart]').click();await check(p,'#count','2');await width(p);await navSize(p);
  await p.locator('[name=name]').fill('Pelanggan Uji');await p.locator('[name=phone]').fill('081234567890');await p.locator('[name=address]').fill('Alamat Uji');await p.locator('[name=landmark]').fill('Patokan Uji');await p.locator('[name=courier]').selectOption('KTEST');await check(p,'#preview','tanpa mie');
  const submit=()=>p.locator('#buyer button[type=submit]').click();
  catalog.menu[1].harga_satuan=16000;await submit();await check(p,'#notice','menu/harga berubah');assert.equal(wa,null);
