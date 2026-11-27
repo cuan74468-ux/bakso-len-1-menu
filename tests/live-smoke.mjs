@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
-import {API_URL} from '../flyer-r11/config.js';
-import {parseCatalog,price} from '../flyer-r11/core.js';
-import {seedMenu} from '../flyer-r11/seed.js';
+import {API_URL} from '../flyer-r12/config.js';
+import {parseCatalog,price} from '../flyer-r12/core.js';
+import {seedMenu} from '../flyer-r12/seed.js';
 
 assert.ok(/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(API_URL),'Missing public /exec configuration');
 const root=resolve('.'), types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};

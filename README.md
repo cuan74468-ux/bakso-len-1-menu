@@ -40,3 +40,6 @@ Explicit URL fragment mode=uat plus two distinct kurir=Name:phone values enables
 
 ## R11 temporary customer availability
 Owner requested ordinary customer checkout while GAS requires Google login. `data/public-catalog.json` is an explicit public snapshot from Sheets (25 menu, two owner-approved public courier contacts, store enabled). It expires 4 Dec 2026 19:30 WIB, respects opening hours, and requests manual price/stock/fee confirmation. It contains no customer data. Public Git history retains these approved contact numbers. Sheet changes require republishing snapshot until GAS works; a successful live response always wins and a later connection failure in that session fails closed. Rollback: revert R11 or set snapshot store.enabled=false and republish. Do not use fallback to claim live inventory.
+
+## R12 responsive design cleanup
+Rebuilt stylesheet into one coherent responsive system. Explicit grid constraints for menu, courier and cart; long text wraps, courier button no longer inherits 44px quantity-button width, native inputs stay within parent, small-screen cart controls move to separate row. Tests inspect actual text bounds at 320/360/desktop, including long notes, dialog and checkout. No changes to order validation or public snapshot expiry.

@@ -13,30 +13,53 @@ const check=async(p,selector,expected)=>{await p.waitForFunction(({selector,expe
 const width=async p=>assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');
 const geometry=async p=>{const report=await p.locator('#menus').evaluate(root=>{const sections=[...root.querySelectorAll(':scope > .menu-section')];const cards=[...root.querySelectorAll('.menu-card')];return {sections:sections.length,cards:cards.length,bad:cards.filter(c=>{const a=c.querySelector('.menu-info'),b=c.querySelector('.prices'),n=c.querySelector('strong');return !a||!b||!n||a.getBoundingClientRect().width<100||(n.textContent.length>12&&n.getBoundingClientRect().width<70)||a.getBoundingClientRect().right>b.getBoundingClientRect().left+1||c.scrollWidth>c.clientWidth+1;}).length,orphans:[...root.children].filter(c=>!c.matches('.menu-section')).length};});assert.ok(report.sections>0&&report.cards>0&&report.bad===0&&report.orphans===0,'Broken layout '+JSON.stringify(report));console.log('PASS menu geometry '+JSON.stringify(report));};
 const navSize=async p=>{const d=await p.locator('.bottom').evaluate(n=>({height:n.getBoundingClientRect().height,buttons:[...n.querySelectorAll('button')].map(b=>b.getBoundingClientRect().height),viewport:innerHeight}));assert.ok(d.height<=64&&d.height/d.viewport<.13,'Oversized navigation '+JSON.stringify(d));assert.ok(d.buttons.every(h=>h>=44&&h<=48),'Invalid tap targets');console.log('PASS compact navigation '+JSON.stringify(d));};
+
+// Inspect actual element and text bounds, not just overall document width.
+// Scrollers (featured/filter rows), intentional image clipping, and native inputs are excluded.
+const contained=async(p,label)=>{
+ const problems=await p.evaluate(()=>{
+  const bad=[];
+  const scopes=[...document.querySelectorAll('.menu-card,.feature-copy,.cart-line,.courier-line,.summary,.modal-head,#checkout,.video-cover,.hero-copy,.store,#preview,.bottom button,.pagination')].filter(el=>el.getClientRects().length);
+  for(const box of scopes){
+   const b=box.getBoundingClientRect(),s=getComputedStyle(box);
+   const left=b.left+parseFloat(s.borderLeftWidth||0),right=b.right-parseFloat(s.borderRightWidth||0);
+   if(box.scrollWidth>box.clientWidth+2)bad.push(box.className+' horizontal '+box.scrollWidth+'/'+box.clientWidth);
+   const walk=document.createTreeWalker(box,NodeFilter.SHOW_TEXT);
+   while(walk.nextNode()){const n=walk.currentNode;if(!n.textContent.trim()||!n.parentElement?.getClientRects().length||n.parentElement.closest('select,input,textarea,[hidden]'))continue;
+    const r=document.createRange();r.selectNodeContents(n);
+    for(const x of r.getClientRects())if(x.width>0&&(x.left<left-2||x.right>right+2||x.top<b.top-2||x.bottom>b.bottom+2)){bad.push((box.className||box.id)+': '+n.textContent.slice(0,48));break;}
+   }
+  }
+  return bad.slice(0,15);
+ });
+ assert.deepEqual(problems,[],label+' text overflow');await width(p);
+ console.log('PASS contained text '+label);
+};
+
 try{
  const ctx=await browser.newContext({viewport:{width:360,height:740},isMobile:true,deviceScaleFactor:1,serviceWorkers:'block'});
  const p=await ctx.newPage(), errors=[];p.on('pageerror',e=>errors.push(e.message));
- await p.route('**/flyer-r11/config.js',route=>route.fulfill({contentType:'text/javascript',body:"export const API_URL = '';"}));
+ await p.route('**/flyer-r12/config.js',route=>route.fulfill({contentType:'text/javascript',body:"export const API_URL = '';"}));
  await p.goto(url);await p.waitForSelector('.menu-card');assert.equal(await p.locator('.menu-card').count(),6);assert.equal(await p.locator('.menu-card:enabled').count(),6);await width(p);
- await geometry(p);assert.equal(await p.locator('.feature-card').count(),4);assert.equal(await p.locator('#video-panel').isVisible(),true);assert.equal(await p.locator('#promo-video').isVisible(),false);assert.equal(await p.locator('#promo-video').getAttribute('src'),null);assert.ok(await p.locator('#play-promo').isEnabled());if(process.env.CHECK_VIDEO==='1'){await p.locator('#play-promo').click();await p.waitForFunction(()=>document.getElementById('promo-video').readyState>=1,{},{timeout:15000});assert.ok(await p.locator('#promo-video').evaluate(v=>v.duration>14&&v.duration<16));await p.locator('#play-promo').click();assert.equal(await p.locator('#promo-video').isVisible(),false);}assert.equal(await p.locator('.menu-card .food-image img').count(),6);await p.waitForFunction(()=>[...document.querySelectorAll('.brand-logo,.hero-photo img,.menu-card img')].every(i=>i.complete&&i.naturalWidth>0));assert.ok(await p.locator('.menu-card img').evaluateAll(imgs=>imgs.every(i=>i.src.includes('/assets/menu-visuals/')&&i.naturalWidth>0)));console.log('PASS verified food illustrations, logo and storefront image, four featured items, video control available; decoding tested separately');await p.locator('#search').fill('Bakso Urat');assert.equal(await p.locator('.menu-card').count(),1);await p.locator('#search').clear();
+ await geometry(p);await contained(p,'360 menu');assert.equal(await p.locator('.feature-card').count(),4);assert.equal(await p.locator('#video-panel').isVisible(),true);assert.equal(await p.locator('#promo-video').isVisible(),false);assert.equal(await p.locator('#promo-video').getAttribute('src'),null);assert.ok(await p.locator('#play-promo').isEnabled());if(process.env.CHECK_VIDEO==='1'){await p.locator('#play-promo').click();await p.waitForFunction(()=>document.getElementById('promo-video').readyState>=1,{},{timeout:15000});assert.ok(await p.locator('#promo-video').evaluate(v=>v.duration>14&&v.duration<16));await p.locator('#play-promo').click();assert.equal(await p.locator('#promo-video').isVisible(),false);}assert.equal(await p.locator('.menu-card .food-image img').count(),6);await p.waitForFunction(()=>[...document.querySelectorAll('.brand-logo,.hero-photo img,.menu-card img')].every(i=>i.complete&&i.naturalWidth>0));assert.ok(await p.locator('.menu-card img').evaluateAll(imgs=>imgs.every(i=>i.src.includes('/assets/menu-visuals/')&&i.naturalWidth>0)));console.log('PASS verified food illustrations, logo and storefront image, four featured items, video control available; decoding tested separately');await p.locator('#search').fill('Bakso Urat');assert.equal(await p.locator('.menu-card').count(),1);await p.locator('#search').clear();
  await p.getByRole('button',{name:'Minuman',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),5);await width(p);
  await navSize(p);
- await p.getByRole('button',{name:'Semua',exact:true}).click();await p.setViewportSize({width:320,height:568});await width(p);await navSize(p);await geometry(p);
- await p.setViewportSize({width:1280,height:800});await width(p);await navSize(p);await geometry(p);
+ await p.getByRole('button',{name:'Semua',exact:true}).click();await p.setViewportSize({width:320,height:568});await width(p);await navSize(p);await geometry(p);await contained(p,'320 menu');
+ await p.setViewportSize({width:1280,height:800});await width(p);await navSize(p);await geometry(p);await contained(p,'desktop menu');
  await p.setViewportSize({width:360,height:740});
- await p.getByRole('button',{name:'Berikutnya',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),6);await p.getByRole('button',{name:'Sebelumnya',exact:true}).click();await p.locator('.menu-card').filter({hasText:'Bakso Isi Daging Cincang'}).click();await p.getByRole('button',{name:'Tambah ke troli'}).click();await p.locator('[data-page=cart]').click();await check(p,'#count','1');assert.ok(await p.locator('#buyer button[type=submit]').isDisabled());console.log('PASS pagination and draft cart without live API');await p.locator('[data-page=menu]').click();console.log('PASS 360px seed, search, filters, checkout locked');
+ await p.getByRole('button',{name:'Berikutnya',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),6);await p.getByRole('button',{name:'Sebelumnya',exact:true}).click();await p.locator('.menu-card').filter({hasText:'Bakso Isi Daging Cincang'}).click();await p.locator('#note').fill('CatatanPanjangTanpaSpasi'.repeat(7));await contained(p,'item dialog');await p.getByRole('button',{name:'Tambah ke troli'}).click();await p.locator('[data-page=cart]').click();await check(p,'#count','1');await p.setViewportSize({width:320,height:568});await contained(p,'320 cart with long note');await p.setViewportSize({width:360,height:740});assert.ok(await p.locator('#buyer button[type=submit]').isDisabled());console.log('PASS pagination and draft cart without live API');await p.locator('[data-page=menu]').click();console.log('PASS 360px seed, search, filters, checkout locked');
  const fake='https://script.google.com/macros/s/TEST_ONLY/exec';
  let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',urutan:1},{id_kurir:'KTEST2',nama_kurir:'Kurir Uji 2',whatsapp:'6281234567891',area_layanan:'',urutan:2}]};
  catalog.menu[0].status='HABIS';
- await p.unroute('**/flyer-r11/config.js');
- await p.route('**/flyer-r11/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
+ await p.unroute('**/flyer-r12/config.js');
+ await p.route('**/flyer-r12/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
  await p.route('https://script.google.com/**',route=>route.fulfill({json:{...catalog,generated_at:new Date().toISOString()},headers:{'access-control-allow-origin':'*'}}));
  let wa=null;await p.route('https://wa.me/**',route=>{wa=route.request().url();return route.fulfill({contentType:'text/plain',body:'Intercepted test; no WhatsApp message sent'});});
  await p.reload();await check(p,'#store','BUKA');
  assert.equal(await p.locator('.menu-card:enabled').count(),6);
  const add=async()=>{await p.locator('.menu-card').filter({hasText:'Bakso Isi Daging Cincang'}).click();await p.locator('#variant').selectOption('satuan');await p.locator('#qty').fill('2');await p.locator('#note').fill('tanpa mie');await p.getByRole('button',{name:'Tambah ke troli'}).click();};
  await add();await p.locator('[data-page=cart]').click();await check(p,'#count','2');await width(p);await navSize(p);
- await p.locator('[name=name]').fill('Pelanggan Uji');await p.locator('[name=phone]').fill('081234567890');await p.locator('[name=address]').fill('Alamat Uji');await p.locator('[name=landmark]').fill('Patokan Uji');await p.locator('[name=courier]').selectOption('KTEST');await p.locator('details summary').click();await check(p,'#preview','tanpa mie');
+ await p.locator('[name=name]').fill('Pelanggan Uji');await p.locator('[name=phone]').fill('081234567890');await p.locator('[name=address]').fill('Alamat Uji');await p.locator('[name=landmark]').fill('Patokan Uji');await p.locator('[name=courier]').selectOption('KTEST');await p.locator('details summary').click();await check(p,'#preview','tanpa mie');await p.setViewportSize({width:320,height:568});await contained(p,'320 checkout and message');await p.setViewportSize({width:360,height:740});
  const submit=()=>p.locator('#buyer button[type=submit]').click();
  catalog.menu[1].harga_satuan=16000;await submit();await check(p,'#notice','menu/harga berubah');assert.equal(wa,null);
  catalog.menu[1].harga_satuan=15000;catalog.store.open=false;await submit();await check(p,'#notice','Toko tutup');assert.equal(wa,null);
@@ -53,7 +76,7 @@ try{
  await p.clock.setFixedTime(new Date('2026-11-27T14:00:00+07:00'));
  await p.goto(url+'/?v=11');
  await check(p,'#store','Konfirmasi ke kurir');
- await p.locator('[data-page=courier]').click();await check(p,'#couriers','Kurir Uji 2');
+ await p.locator('[data-page=courier]').click();await check(p,'#couriers','Kurir Uji 2');await p.setViewportSize({width:320,height:568});await contained(p,'320 courier');await p.setViewportSize({width:360,height:740});
  await p.getByRole('button',{name:'Pilih Kurir Uji 2',exact:true}).click();
  await add();await p.locator('[data-page=cart]').click();
  assert.equal(await p.locator('[name=courier]').inputValue(),'KTEST2');
