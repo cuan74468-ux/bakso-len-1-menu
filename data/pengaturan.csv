@@ -1,0 +1,7 @@
+key,value,keterangan
+nama_toko,Bakso Len 1,Nama toko
+jam_buka,09:00,Format HH:mm
+jam_tutup,19:30,Format HH:mm
+timezone,Asia/Jakarta,WIB
+status_toko,TUTUP,BUKA atau TUTUP
+promo_game_aktif,TIDAK,Belum diimplementasikan
