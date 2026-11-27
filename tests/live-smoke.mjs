@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
-import {API_URL} from '../js/config.js';
-import {parseCatalog,price} from '../js/core.js';
-import {seedMenu} from '../js/seed.js';
+import {API_URL} from '../flyer-r8/config.js';
+import {parseCatalog,price} from '../flyer-r8/core.js';
+import {seedMenu} from '../flyer-r8/seed.js';
 
 assert.ok(/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(API_URL),'Missing public /exec configuration');
 const root=resolve('.'), types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
@@ -17,7 +17,9 @@ try{
  const u=new URL(API_URL);u.searchParams.set('_',String(Date.now()));
  const response=await fetch(u,{redirect:'follow',signal:AbortSignal.timeout(30000)});
  assert.ok(response.ok,'API HTTP '+response.status);
- assert.match(response.headers.get('content-type')||'',/application\/json/i,'API did not return JSON');
+ const type=response.headers.get('content-type')||'';
+ if(!/application\/json/i.test(type)){const html=await response.text();const host=new URL(response.url).hostname;const kind=host==='accounts.google.com'||/Sign in|Masuk ke akun Google|ServiceLogin/i.test(html)?'AUTH_REQUIRED':/Authorization is required|Access denied|permission|izin akses/i.test(html)?'ACCESS_DENIED':/Script function not found|fungsi skrip tidak ditemukan/i.test(html)?'MISSING_DOGET':/Google Drive|file you have requested|file yang Anda minta/i.test(html)?'DRIVE_ERROR':'UNCLASSIFIED_HTML';throw Error('GAS_PUBLIC_ENDPOINT_NOT_JSON: '+kind+' host='+host+' status='+response.status+' content-type='+type);}
+
  const data=parseCatalog(await response.json());
  assert.ok(data.menu.length>0,'Empty menu');
  const byId=new Map(data.menu.map(m=>[m.id_menu,m]));

@@ -16,7 +16,7 @@ const navSize=async p=>{const d=await p.locator('.bottom').evaluate(n=>({height:
 try{
  const ctx=await browser.newContext({viewport:{width:360,height:740},isMobile:true,deviceScaleFactor:1,serviceWorkers:'block'});
  const p=await ctx.newPage(), errors=[];p.on('pageerror',e=>errors.push(e.message));
- await p.route('**/flyer-r7/config.js',route=>route.fulfill({contentType:'text/javascript',body:"export const API_URL = '';"}));
+ await p.route('**/flyer-r8/config.js',route=>route.fulfill({contentType:'text/javascript',body:"export const API_URL = '';"}));
  await p.goto(url);await p.waitForSelector('.menu-card');assert.equal(await p.locator('.menu-card').count(),6);assert.equal(await p.locator('.menu-card:enabled').count(),6);await width(p);
  await geometry(p);assert.equal(await p.locator('.feature-card').count(),4);assert.equal(await p.locator('#video-panel').isVisible(),true);assert.equal(await p.locator('#promo-video').isVisible(),false);assert.equal(await p.locator('#promo-video').getAttribute('src'),null);await p.locator('#play-promo').click();assert.equal(await p.locator('#promo-video').isVisible(),true);await p.waitForFunction(()=>document.getElementById('promo-video').readyState>=1,{},{timeout:15000});assert.ok(await p.locator('#promo-video').evaluate(v=>v.duration>14&&v.duration<16));await p.locator('#play-promo').click();assert.equal(await p.locator('#promo-video').isVisible(),false);assert.equal(await p.locator('.menu-card .food-image img').count(),6);await p.waitForFunction(()=>[...document.querySelectorAll('.brand-logo,.hero-photo img,.menu-card img')].every(i=>i.complete&&i.naturalWidth>0));console.log('PASS verified logo and storefront image, four featured items, video opens on demand and metadata duration verified');await p.locator('#search').fill('Bakso Urat');assert.equal(await p.locator('.menu-card').count(),1);await p.locator('#search').clear();
  await p.getByRole('button',{name:'Minuman',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),5);await width(p);
@@ -26,10 +26,10 @@ try{
  await p.setViewportSize({width:360,height:740});
  await p.getByRole('button',{name:'Berikutnya',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),6);await p.getByRole('button',{name:'Sebelumnya',exact:true}).click();await p.locator('.menu-card').filter({hasText:'Bakso Isi Daging Cincang'}).click();await p.getByRole('button',{name:'Tambah ke troli'}).click();await p.locator('[data-page=cart]').click();await check(p,'#count','1');assert.ok(await p.locator('#buyer button[type=submit]').isDisabled());console.log('PASS pagination and draft cart without live API');await p.locator('[data-page=menu]').click();console.log('PASS 360px seed, search, filters, checkout locked');
  const fake='https://script.google.com/macros/s/TEST_ONLY/exec';
- let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',urutan:1}]};
+ let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',urutan:1},{id_kurir:'KTEST2',nama_kurir:'Kurir Uji 2',whatsapp:'6281234567891',area_layanan:'',urutan:2}]};
  catalog.menu[0].status='HABIS';
- await p.unroute('**/flyer-r7/config.js');
- await p.route('**/flyer-r7/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
+ await p.unroute('**/flyer-r8/config.js');
+ await p.route('**/flyer-r8/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
  await p.route('https://script.google.com/**',route=>route.fulfill({json:{...catalog,generated_at:new Date().toISOString()},headers:{'access-control-allow-origin':'*'}}));
  let wa=null;await p.route('https://wa.me/**',route=>{wa=route.request().url();return route.fulfill({contentType:'text/plain',body:'Intercepted test; no WhatsApp message sent'});});
  await p.reload();await check(p,'#store','BUKA');
@@ -43,8 +43,8 @@ try{
  console.log('PASS 360px cart, note, stock, fresh price and closed-store rejection');
  catalog.store.open=true;await p.reload();await check(p,'#store','BUKA');await add();await p.locator('[data-page=cart]').click();
  for(const [name,value] of Object.entries({name:'Pelanggan Uji',phone:'081234567890',address:'Alamat Uji',landmark:'Patokan Uji'}))await p.locator('[name='+name+']').fill(value);
- await p.locator('[name=courier]').selectOption('KTEST');await submit();await p.waitForURL('https://wa.me/**');
- assert.ok(wa);const target=new URL(wa);assert.equal(target.pathname,'/6281234567890');assert.match(target.searchParams.get('text'),/2x Bakso Isi Daging Cincang/);assert.match(target.searchParams.get('text'),/tanpa mie/);assert.match(target.searchParams.get('text'),/30[.]000/);assert.deepEqual(errors,[]);
+ await p.locator('[name=courier]').selectOption('KTEST2');await submit();await p.waitForURL('https://wa.me/**');
+ assert.ok(wa);const target=new URL(wa);assert.equal(target.pathname,'/6281234567891');assert.match(target.searchParams.get('text'),/2x Bakso Isi Daging Cincang/);assert.match(target.searchParams.get('text'),/tanpa mie/);assert.match(target.searchParams.get('text'),/30[.]000/);assert.match(target.searchParams.get('text'),/Untuk: Kurir Uji 2/);assert.match(target.searchParams.get('text'),/Nama: Pelanggan Uji/);assert.match(target.searchParams.get('text'),/Alamat: Alamat Uji/);assert.match(target.searchParams.get('text'),/Patokan: Patokan Uji/);assert.match(target.searchParams.get('text'),/Mohon kurir segera konfirmasi/);assert.match(target.searchParams.get('text'),/https:\/\/wa.me\/6281234567890/);assert.deepEqual(errors,[]);
  console.log('PASS WhatsApp destination and message intercepted; no external send');
  await ctx.close();
 }finally{await browser.close();await new Promise(r=>server.close(r));}

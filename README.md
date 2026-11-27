@@ -28,3 +28,6 @@ Full image hero, six menus per page, category filters, labeled fallback illustra
 
 ## R7 video
 Owner-supplied 15.1-second Bakso Len promo, optimized for web to 477127 bytes. Video loads on tap only; the cover is a frame from the source video. Original archived in project Drive. Checkout gates unchanged.
+
+## R8 courier checkout
+Courier records are managed only in the private Kurir sheet. Two owner-supplied phone numbers were registered as Kurir 1 and Kurir 2; no public source code stores their numbers. Checkout opens the selected courier WA with complete buyer data, item quantities, prices, notes, total, and explicit callback request. Customer presses Send in WhatsApp. Store status remains controlled by Sheets; live API diagnostic required.
