@@ -3,7 +3,33 @@ const $=id=>document.getElementById(id);const node=(tag,t='',cls='')=>{const e=d
 let menu=seedMenu,live=null,cart=[],category='Semua',chosen=null,checking=false,requestSeq=0;const buyer=$('buyer');
 function notify(t){$('notice').textContent=t;}
 function canOrder(){return live?.store.open===true&&live.kurir.length>0;}
-function renderMenu(){const q=$('search').value.toLowerCase().trim();$('menus').replaceChildren();for(const cat of categories){if(category!=='Semua'&&category!==cat)continue;const ms=menu.filter(m=>m.kategori===cat&&(m.nama_menu+' '+m.deskripsi).toLowerCase().includes(q));if(!ms.length)continue;const h=node('h3',cat,'category'),grid=node('div','','menu-grid');for(const m of ms){const b=node('button','','menu-card');b.type='button';b.disabled=!canOrder()||m.status!=='READY';if(m.foto_url){try{const u=new URL(m.foto_url,location.href);if(u.protocol==='https:'||(u.origin===location.origin&&u.protocol==='http:')){const img=document.createElement('img');img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=u.href;img.addEventListener('error',()=>img.remove());b.append(img);}}catch{}}if(m.badge)b.append(node('span',m.badge==='Best'?'Favorit':m.badge==='New'?'Baru':m.badge,'badge'));b.append(node('strong',m.nama_menu),node('span',m.deskripsi||'','description'));const prices=node('div','','prices');for(const v of ['porsi','satuan'])if(price(m,v))prices.append(node('div',rupiah(price(m,v))+' / '+v));b.append(prices,node('span',!live?'Stok belum diverifikasi':m.status==='HABIS'?'Habis':canOrder()?'Pilih +':'Pemesanan ditutup','stock'));b.addEventListener('click',()=>openItem(m));grid.append(b);}$('menus').append(h,grid);}if(!$('menus').children.length)$('menus').append(node('p','Menu tidak ditemukan.'));}
+function renderMenu(){
+ const q=$('search').value.toLowerCase().trim(),root=$('menus');
+ root.replaceChildren();
+ for(const cat of categories){
+  if(category!=='Semua'&&category!==cat)continue;
+  const ms=menu.filter(m=>m.kategori===cat&&(m.nama_menu+' '+m.deskripsi).toLowerCase().includes(q));
+  if(!ms.length)continue;
+  const section=node('section','','menu-section'),heading=node('h3',cat,'category'),grid=node('div','','menu-grid');
+  section.append(heading,grid);
+  for(const m of ms){
+   const b=node('button','','menu-card');b.type='button';
+   const ready=canOrder()&&m.status==='READY';b.disabled=!ready;
+   if(m.foto_url){try{const u=new URL(m.foto_url,location.href);if(u.protocol==='https:'||(u.origin===location.origin&&u.protocol==='http:')){const img=document.createElement('img');img.alt='';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=u.href;img.addEventListener('error',()=>img.remove());b.append(img);}}catch{}}
+   const info=node('div','','menu-info'),name=node('strong',m.nama_menu);
+   info.append(name);
+   if(m.badge==='Best'||m.badge==='New')info.append(node('span',m.badge==='Best'?'Favorit':'Baru','badge'));
+   if(m.deskripsi)info.append(node('span',m.deskripsi,'description'));
+   if(live&&m.status==='HABIS')info.append(node('span','Habis','stock'));
+   const prices=node('div','','prices');
+   for(const v of ['porsi','satuan'])if(price(m,v)){const line=node('div','','price-line');line.append(node('span',rupiah(price(m,v))),node('small',v));prices.append(line);}
+   if(ready){const plus=node('span','+','add-mark');plus.setAttribute('aria-hidden','true');prices.append(plus);}
+   b.append(info,prices);b.addEventListener('click',()=>openItem(m));grid.append(b);
+  }
+  root.append(section);
+ }
+ if(!root.children.length)root.append(node('p','Menu tidak ditemukan.'));
+}
 function renderFilters(){ $('filters').replaceChildren();for(const cat of ['Semua',...categories]){const b=node('button',cat);b.type='button';b.setAttribute('aria-pressed',String(cat===category));b.onclick=()=>{category=cat;renderFilters();renderMenu()};$('filters').append(b);}}
 function openItem(m){chosen=m;$('item-title').textContent=m.nama_menu;$('item-desc').textContent=m.deskripsi;$('variant').replaceChildren();for(const v of ['porsi','satuan'])if(price(m,v)){const opt=node('option',(v==='porsi'?'Porsian':'Satuan')+' — '+rupiah(price(m,v)));opt.value=v;$('variant').append(opt);}$('qty').value=1;$('note').value='';$('item').showModal();}
 $('close').onclick=()=>$('item').close();$('item-form').onsubmit=e=>{e.preventDefault();if(!chosen||!canOrder())return;const v=$('variant').value,qty=Number($('qty').value),note=clean($('note').value,180),p=price(chosen,v);if(!p||!Number.isInteger(qty)||qty<1||qty>99)return;const existing=cart.find(l=>l.id===chosen.id_menu&&l.variant===v&&l.note===note&&l.price===p);if(existing&&existing.qty+qty>99){notify('Maksimal 99 per item.');return;}if(existing)existing.qty+=qty;else cart.push({id:chosen.id_menu,name:chosen.nama_menu,variant:v,qty,price:p,note});$('item').close();renderCart();notify('Ditambahkan ke troli.');};
