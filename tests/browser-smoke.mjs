@@ -4,7 +4,7 @@ import {createServer} from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {resolve,extname,sep} from 'node:path';
 import {seedMenu} from '../js/seed.js';
-const root=resolve('.'), types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.webmanifest':'application/manifest+json'};
+const root=resolve('.'), types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.svg':'image/svg+xml','.webmanifest':'application/manifest+json','.jpg':'image/jpeg'};
 const server=createServer(async(req,res)=>{try{const path=resolve(root,'.'+new URL(req.url,'http://localhost').pathname);const file=path===root?resolve(root,'index.html'):path;if(!file.startsWith(root+sep))throw Error('path');res.setHeader('Content-Type',types[extname(file)]||'text/plain');res.end(await readFile(file));}catch{res.writeHead(404);res.end();}});
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const url='http://127.0.0.1:'+server.address().port;
@@ -16,9 +16,9 @@ const navSize=async p=>{const d=await p.locator('.bottom').evaluate(n=>({height:
 try{
  const ctx=await browser.newContext({viewport:{width:360,height:740},isMobile:true,deviceScaleFactor:1,serviceWorkers:'block'});
  const p=await ctx.newPage(), errors=[];p.on('pageerror',e=>errors.push(e.message));
- await p.route('**/ui-r4/config.js',route=>route.fulfill({contentType:'text/javascript',body:"export const API_URL = '';"}));
+ await p.route('**/flyer-r5/config.js',route=>route.fulfill({contentType:'text/javascript',body:"export const API_URL = '';"}));
  await p.goto(url);await p.waitForSelector('.menu-card');assert.equal(await p.locator('.menu-card').count(),25);assert.equal(await p.locator('.menu-card:enabled').count(),0);await width(p);
- await geometry(p);await p.locator('#search').fill('Bakso Urat');assert.equal(await p.locator('.menu-card').count(),1);await p.locator('#search').clear();
+ await geometry(p);assert.equal(await p.locator('.feature-card').count(),4);assert.equal(await p.locator('#video-panel').isVisible(),false);await p.waitForFunction(()=>[...document.querySelectorAll('.brand-logo,.hero-photo img')].every(i=>i.complete&&i.naturalWidth>0));console.log('PASS verified logo and storefront image, four featured items, absent video hidden');await p.locator('#search').fill('Bakso Urat');assert.equal(await p.locator('.menu-card').count(),1);await p.locator('#search').clear();
  await p.getByRole('button',{name:'Minuman',exact:true}).click();assert.equal(await p.locator('.menu-card').count(),5);await width(p);
  await navSize(p);
  await p.getByRole('button',{name:'Semua',exact:true}).click();await p.setViewportSize({width:320,height:568});await width(p);await navSize(p);await geometry(p);
@@ -28,8 +28,8 @@ try{
  const fake='https://script.google.com/macros/s/TEST_ONLY/exec';
  let catalog={ok:true,schema:1,generated_at:new Date().toISOString(),store:{open:true,jam_buka:'09:00',jam_tutup:'19:30',timezone:'Asia/Jakarta'},menu:seedMenu.map(m=>({...m,status:'READY'})),kurir:[{id_kurir:'KTEST',nama_kurir:'Kurir Uji',whatsapp:'6281234567890',area_layanan:'Area Uji',urutan:1}]};
  catalog.menu[0].status='HABIS';
- await p.unroute('**/ui-r4/config.js');
- await p.route('**/ui-r4/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
+ await p.unroute('**/flyer-r5/config.js');
+ await p.route('**/flyer-r5/config.js',route=>route.fulfill({contentType:'text/javascript',body:'export const API_URL = '+JSON.stringify(fake)+';'}));
  await p.route('https://script.google.com/**',route=>route.fulfill({json:{...catalog,generated_at:new Date().toISOString()},headers:{'access-control-allow-origin':'*'}}));
  let wa=null;await p.route('https://wa.me/**',route=>{wa=route.request().url();return route.fulfill({contentType:'text/plain',body:'Intercepted test; no WhatsApp message sent'});});
  await p.reload();await check(p,'#store','BUKA');

@@ -19,3 +19,6 @@ Kandidat awal. Bukan sistem POS, marketplace, atau penerima pembayaran. Menu pub
 
 ## Test
 `npm test` (Node 22, tanpa dependency). `python -m http.server 8000` untuk inspeksi lokal. Deploy Pages hanya setelah audit dan persetujuan pemilik.
+
+## Flyer preview r5
+Food-delivery-inspired green/white visual system with real Bakso Len logo and storefront asset from the project folder. Featured selections and prices derive from menu data. Individual photos render only when `foto_url` is supplied. Promo video requires a verified direct public video URL in flyer-r5/media.js; hidden by default. Preview worker retired; offline install is not enabled pending stable release. Live API returning HTML remains a separate failing integration check.
