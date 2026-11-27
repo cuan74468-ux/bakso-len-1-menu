@@ -1,0 +1,33 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - run: node --check js/app.js && node --check sw.js
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-save --package-lock=false --ignore-scripts playwright@1.56.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/browser-smoke.mjs
+      - name: Verify live API and CORS
+        if: success() || failure()
+        run: node tests/live-smoke.mjs
+      - name: Verify video decoding
+        if: success() || failure()
+        env:
+          CHECK_VIDEO: '1'
+        run: node tests/browser-smoke.mjs
