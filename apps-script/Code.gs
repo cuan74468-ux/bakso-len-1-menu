@@ -2,7 +2,7 @@
 const MENU_HEADERS=['id_menu','kategori','nama_menu','deskripsi','harga_porsi','harga_satuan','badge','status','foto_url','urutan'];
 const COURIER_HEADERS=['id_kurir','nama_kurir','whatsapp','area_layanan','aktif','urutan'];
 const SETTINGS_HEADERS=['key','value','keterangan'];
-function rows_(ss,name,headers){const sh=ss.getSheetByName(name);if(!sh)throw Error('Missing table');const values=sh.getDataRange().getDisplayValues();const head=values.shift();if(!headers.every((h,i)=>head[i]===h))throw Error('Schema mismatch');return values.filter(r=>r.some(v=>v!=='' )).map(r=>Object.fromEntries(headers.map((h,i)=>[h,String(r[i]||'').trim()])));}
+function rows_(ss,name,headers){const sh=ss.getSheetByName(name);if(!sh)throw Error('Missing table');const values=sh.getDataRange().getValues();const head=values.shift();if(!headers.every((h,i)=>head[i]===h))throw Error('Schema mismatch');return values.filter(r=>r.some(v=>v!=='' )).map(r=>Object.fromEntries(headers.map((h,i)=>[h,String(r[i]??'').trim()])));}
 function integer_(s){if(s==='')return null;if(!/^\d+$/.test(s)||!Number.isSafeInteger(Number(s))||Number(s)<=0)throw Error('Invalid price');return Number(s);}
 function normalizePhone_(s){if(!/^\+?[\d\s()-]+$/.test(String(s).trim()))return '';let n=String(s).replace(/\D/g,'');if(n.startsWith('0'))n='62'+n.slice(1);return /^628\d{7,11}$/.test(n)?n:'';}
 function unique_(list,key){const ids=new Set();for(const r of list){if(!r[key]||ids.has(r[key]))throw Error('Invalid identifier');ids.add(r[key]);}}

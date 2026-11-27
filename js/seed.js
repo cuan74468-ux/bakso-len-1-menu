@@ -1,9 +1,9 @@
 export const seedMenu = [
   {
-    "id_menu": "B01",
+    "id_menu": "MNU-01",
     "kategori": "Bakso",
     "nama_menu": "Bakso Tanpa Tepung",
-    "deskripsi": "4 bakso daging sapi ukuran sedang tanpa tepung pengisi",
+    "deskripsi": "4 buah bakso daging sapi ukuran sedang murni tanpa tepung pengisi, cita rasa daging sapi asli di setiap gigitan.",
     "harga_porsi": 28000,
     "harga_satuan": null,
     "badge": "New",
@@ -12,22 +12,22 @@ export const seedMenu = [
     "urutan": 1
   },
   {
-    "id_menu": "B02",
+    "id_menu": "MNU-02",
     "kategori": "Bakso",
     "nama_menu": "Bakso Isi Daging Cincang",
-    "deskripsi": "1 bakso besar isi daging cincang + 5 bakso kecil",
+    "deskripsi": "1 Bakso Besar Isi Daging Cincang + 5 Bakso Kecil",
     "harga_porsi": 18000,
     "harga_satuan": 15000,
-    "badge": "",
+    "badge": "Best",
     "status": "HABIS",
     "foto_url": "",
     "urutan": 2
   },
   {
-    "id_menu": "B03",
+    "id_menu": "MNU-03",
     "kategori": "Bakso",
     "nama_menu": "Bakso Urat",
-    "deskripsi": "1 bakso besar urat + 5 bakso kecil",
+    "deskripsi": "1 Bakso Besar Urat + 5 Bakso Kecil",
     "harga_porsi": 18000,
     "harga_satuan": 15000,
     "badge": "Best",
@@ -36,10 +36,10 @@ export const seedMenu = [
     "urutan": 3
   },
   {
-    "id_menu": "B04",
+    "id_menu": "MNU-04",
     "kategori": "Bakso",
     "nama_menu": "Bakso Keju",
-    "deskripsi": "2 bakso sedang isi keju + 4 bakso kecil",
+    "deskripsi": "2 Bakso Sedang Isi Keju + 4 Bakso Kecil",
     "harga_porsi": 20000,
     "harga_satuan": 10000,
     "badge": "Best",
@@ -48,10 +48,10 @@ export const seedMenu = [
     "urutan": 4
   },
   {
-    "id_menu": "B05",
+    "id_menu": "MNU-05",
     "kategori": "Bakso",
     "nama_menu": "Bakso Telur",
-    "deskripsi": "1 bakso besar isi telur + 5 bakso kecil",
+    "deskripsi": "1 Bakso Besar Isi Telur + 5 Bakso Kecil",
     "harga_porsi": 18000,
     "harga_satuan": 15000,
     "badge": "",
@@ -60,10 +60,10 @@ export const seedMenu = [
     "urutan": 5
   },
   {
-    "id_menu": "B06",
+    "id_menu": "MNU-06",
     "kategori": "Bakso",
     "nama_menu": "Bakso Isi Daging Halus",
-    "deskripsi": "2 bakso sedang isi daging halus + 4 bakso kecil",
+    "deskripsi": "2 Bakso Sedang Isi Daging Halus + 4 Bakso Kecil",
     "harga_porsi": 18000,
     "harga_satuan": 8000,
     "badge": "",
@@ -72,10 +72,10 @@ export const seedMenu = [
     "urutan": 6
   },
   {
-    "id_menu": "B07",
+    "id_menu": "MNU-07",
     "kategori": "Bakso",
     "nama_menu": "Bakso Kecil-Kecil",
-    "deskripsi": "13 bakso kecil-kecil",
+    "deskripsi": "13 Bakso Kecil-Kecil",
     "harga_porsi": 15000,
     "harga_satuan": null,
     "badge": "",
@@ -84,10 +84,10 @@ export const seedMenu = [
     "urutan": 7
   },
   {
-    "id_menu": "B08",
+    "id_menu": "MNU-08",
     "kategori": "Bakso",
     "nama_menu": "Porsi Kecil",
-    "deskripsi": "1 bakso daging halus sedang + 3 pentol kecil",
+    "deskripsi": "1 Bakso Daging Halus Sedang + 3 Pentol Kecil",
     "harga_porsi": 13000,
     "harga_satuan": null,
     "badge": "",
@@ -96,10 +96,10 @@ export const seedMenu = [
     "urutan": 8
   },
   {
-    "id_menu": "B09",
+    "id_menu": "MNU-09",
     "kategori": "Bakso",
     "nama_menu": "Bakso Double",
-    "deskripsi": "2 bakso besar pilihan (cincang, telur, urat) + 1 bakso kecil",
+    "deskripsi": "2 Bakso Besar Pilih (Isi Daging Cincang / Telur / Urat) + 1 Bakso Kecil",
     "harga_porsi": 30000,
     "harga_satuan": null,
     "badge": "",
@@ -108,10 +108,10 @@ export const seedMenu = [
     "urutan": 9
   },
   {
-    "id_menu": "B10",
+    "id_menu": "MNU-10",
     "kategori": "Bakso",
     "nama_menu": "Bakso Mix",
-    "deskripsi": "1 keju, 1 telur puyuh, 1 daging halus, 1 tanpa tepung + 2 kecil",
+    "deskripsi": "1 Keju, 1 Telur Puyuh, 1 Daging Halus, 1 Tanpa Tepung + 2 Kecil",
     "harga_porsi": 35000,
     "harga_satuan": null,
     "badge": "",
@@ -120,10 +120,10 @@ export const seedMenu = [
     "urutan": 10
   },
   {
-    "id_menu": "B11",
+    "id_menu": "MNU-11",
     "kategori": "Bakso",
     "nama_menu": "Bakso Balungan",
-    "deskripsi": "1 bakso besar pilihan (urat, cincang, telur) + balungan",
+    "deskripsi": "1 Bakso Besar Pilih (Urat / Isi Daging Cincang / Telur) + Balungan",
     "harga_porsi": 35000,
     "harga_satuan": null,
     "badge": "",
@@ -132,10 +132,10 @@ export const seedMenu = [
     "urutan": 11
   },
   {
-    "id_menu": "B12",
+    "id_menu": "MNU-12",
     "kategori": "Bakso",
     "nama_menu": "Bakso Tunjang / Sumsum",
-    "deskripsi": "1 bakso tunjang / sumsum + 2 bakso kecil",
+    "deskripsi": "1 Bakso Tunjang / Sumsum + 2 Bakso Kecil",
     "harga_porsi": 35000,
     "harga_satuan": null,
     "badge": "",
@@ -144,10 +144,10 @@ export const seedMenu = [
     "urutan": 12
   },
   {
-    "id_menu": "M01",
+    "id_menu": "MNU-13",
     "kategori": "Mie & Bakar",
     "nama_menu": "Mie Ayam Bakso",
-    "deskripsi": "Mie ayam + 2 bakso kecil",
+    "deskripsi": "Mie Ayam + 2 Bakso Kecil",
     "harga_porsi": 15000,
     "harga_satuan": null,
     "badge": "",
@@ -156,7 +156,7 @@ export const seedMenu = [
     "urutan": 13
   },
   {
-    "id_menu": "M02",
+    "id_menu": "MNU-14",
     "kategori": "Mie & Bakar",
     "nama_menu": "Mie Goreng",
     "deskripsi": "Mie goreng spesial Bakso Len",
@@ -168,7 +168,7 @@ export const seedMenu = [
     "urutan": 14
   },
   {
-    "id_menu": "M03",
+    "id_menu": "MNU-15",
     "kategori": "Mie & Bakar",
     "nama_menu": "Mie Kwetiau",
     "deskripsi": "Mie kwetiau spesial Bakso Len",
@@ -180,10 +180,10 @@ export const seedMenu = [
     "urutan": 15
   },
   {
-    "id_menu": "M04",
+    "id_menu": "MNU-16",
     "kategori": "Mie & Bakar",
     "nama_menu": "Ayam Sambal Bakar",
-    "deskripsi": "Ayam goreng + nasi + sambal bakar + lalapan",
+    "deskripsi": "1 Potong Ayam Goreng + Nasi + Sambal Bakar + Lalapan",
     "harga_porsi": 25000,
     "harga_satuan": null,
     "badge": "New",
@@ -192,10 +192,10 @@ export const seedMenu = [
     "urutan": 16
   },
   {
-    "id_menu": "M05",
+    "id_menu": "MNU-17",
     "kategori": "Mie & Bakar",
     "nama_menu": "Bebek Sambal Bakar",
-    "deskripsi": "Bebek goreng + nasi + sambal bakar + lalapan",
+    "deskripsi": "1 Potong Bebek Goreng + Nasi + Sambal Bakar + Lalapan",
     "harga_porsi": 30000,
     "harga_satuan": null,
     "badge": "New",
@@ -204,7 +204,7 @@ export const seedMenu = [
     "urutan": 17
   },
   {
-    "id_menu": "T01",
+    "id_menu": "MNU-18",
     "kategori": "Topping",
     "nama_menu": "Bakso Tahu",
     "deskripsi": "Per satuan",
@@ -216,7 +216,7 @@ export const seedMenu = [
     "urutan": 18
   },
   {
-    "id_menu": "T02",
+    "id_menu": "MNU-19",
     "kategori": "Topping",
     "nama_menu": "Kuah Creamy / Mix",
     "deskripsi": "Per porsi",
@@ -228,7 +228,7 @@ export const seedMenu = [
     "urutan": 19
   },
   {
-    "id_menu": "T03",
+    "id_menu": "MNU-20",
     "kategori": "Topping",
     "nama_menu": "Tetelan",
     "deskripsi": "Per porsi",
@@ -240,7 +240,7 @@ export const seedMenu = [
     "urutan": 20
   },
   {
-    "id_menu": "D01",
+    "id_menu": "MNU-21",
     "kategori": "Minuman",
     "nama_menu": "Es Jeruk",
     "deskripsi": "",
@@ -252,7 +252,7 @@ export const seedMenu = [
     "urutan": 21
   },
   {
-    "id_menu": "D02",
+    "id_menu": "MNU-22",
     "kategori": "Minuman",
     "nama_menu": "Es Teh",
     "deskripsi": "",
@@ -264,7 +264,7 @@ export const seedMenu = [
     "urutan": 22
   },
   {
-    "id_menu": "D03",
+    "id_menu": "MNU-23",
     "kategori": "Minuman",
     "nama_menu": "Es Oyen",
     "deskripsi": "",
@@ -276,7 +276,7 @@ export const seedMenu = [
     "urutan": 23
   },
   {
-    "id_menu": "D04",
+    "id_menu": "MNU-24",
     "kategori": "Minuman",
     "nama_menu": "Minuman Botolan",
     "deskripsi": "Fruit Tea, Teh Botol, Air Mineral Prima",
@@ -288,7 +288,7 @@ export const seedMenu = [
     "urutan": 24
   },
   {
-    "id_menu": "D05",
+    "id_menu": "MNU-25",
     "kategori": "Minuman",
     "nama_menu": "Es Kosong",
     "deskripsi": "",
