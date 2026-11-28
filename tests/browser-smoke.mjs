@@ -84,15 +84,13 @@ try{
  await submit();await p.waitForURL('https://wa.me/**');
  assert.equal(new URL(wa).pathname,'/6281234567891');assert.match(new URL(wa).searchParams.get('text'),/PERMINTAAN PESANAN/);assert.doesNotMatch(new URL(wa).searchParams.get('text'),/UJI COBA — BUKAN/);
  console.log('PASS ordinary customer fallback, selectable courier, confirmed order request; intercepted WhatsApp');
- // Explicit owner-only test link: synthetic contacts, intercepted WA; no real message.
- await p.goto(url+'/?v=10#mode=uat&kurir=Penguji%20A%3A081234567890&kurir=Penguji%20B%3A081234567891');
- await check(p,'#store','MODE UJI COBA');
- assert.equal(await p.locator('#uat-note').isVisible(),true);
- await p.locator('[data-page=courier]').click();await check(p,'#couriers','Penguji B');assert.equal(await p.locator('.courier-whatsapp').count(),0);
- await p.locator('[data-page=menu]').click();await add();await p.locator('[data-page=cart]').click();
- for(const [name,value] of Object.entries({name:'Pelanggan Uji',phone:'081234567890',address:'Alamat Uji',landmark:'Patokan Uji'}))await p.locator('[name='+name+']').fill(value);
- await p.locator('[name=courier]').selectOption('UAT-2');await submit();await p.waitForURL('https://wa.me/**');
- assert.equal(new URL(wa).pathname,'/6281234567891');assert.match(new URL(wa).searchParams.get('text'),/UJI COBA — BUKAN PESANAN SUNGGUHAN/);
- console.log('PASS explicit UAT link, two contacts, cart and marked WhatsApp message; no external send');
+ // Old test links must never override the public catalog or courier selection.
+ await p.goto(url+'/?v=18#mode=uat&kurir=Penguji%20A%3A081234567890&kurir=Penguji%20B%3A081234567891');
+ await check(p,'#store','Konfirmasi ke kurir');
+ assert.equal(await p.locator('#uat-note').count(),0);
+ await p.locator('[data-page=courier]').click();await check(p,'#couriers','Kurir Uji 2');
+ assert.equal(await p.getByRole('button',{name:'Pilih Penguji B',exact:true}).count(),0);
+ assert.equal(await p.locator('.courier-whatsapp').count(),2);
+ console.log('PASS public catalog ignores legacy test links');
  await ctx.close();
 }finally{await browser.close();await new Promise(r=>server.close(r));}
